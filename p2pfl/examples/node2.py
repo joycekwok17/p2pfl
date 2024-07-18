@@ -33,18 +33,21 @@ This node will be connected to node1 and then, the federated learning process wi
 
 def __get_args():
     parser = argparse.ArgumentParser(description="P2PFL MNIST node using a MLP model and a MnistFederatedDM.")
-    parser.add_argument("port", type=int, help="The port to connect.")
+    parser.add_argument("self_address", type=str, help="self ip address and the port number -> ip addr: portnumber.")
+    parser.add_argument("other_address", type=str, help="The ip address and the port number of the other node -> ip addr: portnumber.")
     return parser.parse_args()
 
-def node2(port):
+def node2(self_address, other_address):
     node = Node(
         MLP(),
         MnistFederatedDM(sub_id=1, number_sub=2),
-        port=int(sys.argv[1]),
+        # port=int(sys.argv[1]),
+        address= self_address,    # self address would be "192.168.1.1:50051"
     )
     node.start()
-
-    node.connect(f"127.0.0.1:{port}")
+    parsed_other_address = other_address.split(":")
+    # node.connect(f"127.0.0.1:{port}")
+    node.connect(f"{parsed_other_address[0]}:{parsed_other_address[1]}")
     time.sleep(4)
 
     node.set_start_learning(rounds=2, epochs=1)
@@ -64,5 +67,5 @@ if __name__ == "__main__":
     args = __get_args()
 
     # Run node2
-    node2(args.port)
+    node2(args.self_address, args.other_address)
 

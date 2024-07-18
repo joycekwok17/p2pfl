@@ -32,14 +32,15 @@ This node only starts, create a node2 and connect to it in order to start the fe
 
 def __get_args():
     parser = argparse.ArgumentParser(description="P2PFL MNIST node using a MLP model and a MnistFederatedDM.")
-    parser.add_argument("port", type=int, help="The port.")
+    parser.add_argument("addr", type=str, help="The ip address and the port number -> ip addr: portnumber.")
+    # parser.add_argument("port", type=int, help="The port.")
     return parser.parse_args()
 
-def node1(port):
+def node1(address):
     node = Node(
         MLP(),
         MnistFederatedDM(sub_id=0, number_sub=2),
-        port=port
+        address= address    # address would be "192.168.1.1:50051"
     )
     node.start()
 
@@ -49,4 +50,4 @@ def node1(port):
 
 if __name__ == "__main__":
     args = __get_args()
-    node1(args.port)
+    node1(args.addr)
